@@ -1,0 +1,513 @@
+
+??? Sampling different sections of the dataset
+
+SAMPLE; ALL $
+REJECT; AUS = 1 $
+REJECT; CHL = 1 $
+REJECT; CHN = 1 $
+REJECT; COL = 1 $
+REJECT; GHA = 1 $
+REJECT; IDN = 1 $
+REJECT; JAP = 1 $
+REJECT; KEN = 1 $
+REJECT; NLD = 1 $
+REJECT; NZL = 1 $
+REJECT; GBR = 1 $
+REJECT; USA = 1 $
+
+REJECT; MAKECH = 6 $
+REJECT; FINISH = 0 $
+REJECT; WILLING = 2 $
+REJECT; WILLING = 3 $
+
+
+??? Create status quo interactions
+
+CREATE
+;HID_CC10 = CCHIGH*D_CC10 $
+
+CREATE
+;HID_CC25 = CCHIGH*D_CC25 $
+
+CREATE
+;HID_CC40 = CCHIGH*D_CC40 $
+
+CREATE
+;HID_RF10 = RFHIGH*D_RF10 $
+
+CREATE
+;HID_RF25 = RFHIGH*D_RF25 $
+
+CREATE
+;HID_RF40 = RFHIGH*D_RF40 $
+
+
+??? Delete variables to make space
+
+DELETE
+;MEAS,CC,RF,VERSION,AGREE,LIVECOR,WTP,
+CONCC,CONSPECI,CONDECL,CONNAT,CONPOLL,CONPOLI,CONTERR,CONCRIM,CONECON,CONTECH,CONFAM,
+CONDISE,CONEPID,CONDEMO,CONSOC,POSDIFF,OPTIM,RISKSEEK,LOCUS,
+EMPLOY,RESIDE,DOAMOUNT $
+
+
+??? Create individual variable fee interactions
+
+
+CREATE
+;AGEX = AGE*FEEUSD $
+
+
+CREATE
+;if(GENDER = 1)MALE = 1 
+;if(GENDER = 2)MALE = 0 $
+CREATE
+;MALEX = MALE*FEEUSD $
+
+
+CREATE
+;if(EDUCAT = 1)HIGHED = 0
+;if(EDUCAT = 2)HIGHED = 0
+;if(EDUCAT = 3)HIGHED = 0
+;if(EDUCAT = 6)HIGHED = 0
+;if(EDUCAT = 4)HIGHED = 1
+;if(EDUCAT = 5)HIGHED = 1 $
+CREATE
+;HIGHEDX = HIGHED*FEEUSD $
+
+
+CREATE
+;if(INCOME = 1)INC = 1
+;if(INCOME = 2)INC = 2
+;if(INCOME = 3)INC = 3
+;if(INCOME = 4)INC = 4
+;if(INCOME = 5)INC = 5
+;if(INCOME = 6)INC = 6 $
+CREATE
+;INCX = INC*FEEUSD $
+
+
+CREATE
+;FORX = FOREIGN*FEEUSD $
+
+
+CREATE
+;PATIENX = PATIENCE*FEEUSD $
+
+
+CREATE
+;CONSERV = POLIDEO $
+CREATE
+;CONSERVX = CONSERV*FEEUSD $
+
+
+CREATE
+;if(CCBELIEF = 1)CCNOT = 1
+;if(CCBELIEF = 2)CCNOT = 0
+;if(CCBELIEF = 3)CCNOT = 0
+;if(CCBELIEF = 4)CCNOT = 0 $
+CREATE
+;CCNOTX = CCNOT*FEEUSD $
+
+CREATE
+;if(CCBELIEF = 1)CCDK = 0
+;if(CCBELIEF = 2)CCDK = 1
+;if(CCBELIEF = 3)CCDK = 0
+;if(CCBELIEF = 4)CCDK = 0 $
+CREATE
+;CCDKX = CCDK*FEEUSD $
+
+CREATE
+;if(CCBELIEF = 1)CCNAT = 0
+;if(CCBELIEF = 2)CCNAT = 0
+;if(CCBELIEF = 3)CCNAT = 1
+;if(CCBELIEF = 4)CCNAT = 0 $
+CREATE
+;CCNATX = CCNAT*FEEUSD $
+
+
+CREATE
+;DIVSNORX = DIVSNOR*FEEUSD $
+
+
+CREATE
+;DONATEDX = DONATED*FEEUSD $
+
+
+CREATE
+;if(DOCU = 1)DOCUM = 1
+;if(DOCU = 2)DOCUM = 0 $
+CREATE
+;DOCUMX = DOCUM*FEEUSD $
+
+
+
+
+??? MNL without interactions
+
+Calc; ran(10101) $
+NLOGIT
+;lhs = CHOICE,CSET,ALTI
+;Choices = a,b,c
+;pds = 6
+;Model:
+
+U(a) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD /
+
+U(b) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD /
+
+U(c) = ASC $
+
+
+
+
+
+
+
+
+??? Mixed logit without interactions
+
+
+Calc; ran(10101) $
+NLOGIT
+;lhs = CHOICE,CSET,ALTI
+;Choices = a,b,c
+;Halton
+;rpl
+;pds = 6
+;fcn = rest(u),legis(u),
+       cc10(u),cc25(u),cc40(u),hicc10(u),hicc25(u),hicc40(u),
+       rf10(u),rf25(u),rf40(u),hirf10(u),hirf25(u),hirf40(u),
+       asc(u)
+;pts = 3
+;wtp = rest/fee
+;parameters
+;Model:
+
+U(a) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD /
+
+U(b) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD /
+
+U(c) = ASC $
+
+
+
+
+
+
+
+
+
+??? WTP estimates
+
+Matrix ; vz = varb(1:16,1:16) $
+Matrix ; bz = b(1:16) $
+
+WALD
+; Start  = bz
+; Var    = vz
+;fn1 = p_rest =  -b1/b16
+;fn2 = p_legi = -b2/b16
+;fn3 = p_lcc10 = -b3/b16
+;fn4 = p_lcc25 = -b4/b16
+;fn5 = p_lcc40 = -b5/b16
+;fn6 = p_hcc10 = -(b3+b6)/b16
+;fn7 = p_hcc25 = -(b4+b7)/b16
+;fn8 = p_hcc40 = -(b5+b8)/b16
+;fn9 = p_lrf10 = -b9/b16
+;fn10 = p_lrf25 = -b10/b16
+;fn11 = p_lrf40 = -b11/b16
+;fn12 = p_hrf10 = -(b9+b12)/b16
+;fn13 = p_hrf25 = -(b10+b13)/b16
+;fn14 = p_hrf40 = -(b11+b14)/b16 
+;k&r
+;pts = 1000 $
+
+
+
+
+
+
+
+
+
+
+??? Simulate values for Poe-test
+
+? Covariance matrix for parameter estimates
+
+Matrix ; vz = varb(1:16,1:16) $
+Matrix ; bz = b(1:16) $
+Sample ; 1 - 1000 $
+
+? Random draws for K&R, z is 1000x16
+
+Create ; z1 = rnn(0,1) ; z2 = rnn(0,1) ; z3 = rnn(0,1) ; z4 = rnn(0,1)
+       ; z5 = rnn(0,1) ; z6 = rnn(0,1) ; z7 = rnn(0,1) ; z8 = rnn(0,1) 
+       ; z9 = rnn(0,1) ; z10 = rnn(0,1) ; z11 = rnn(0,1) ; z12 = rnn(0,1)
+       ; z13 = rnn(0,1) ; z14 = rnn(0,1) ; z15 = rnn(0,1) ; z16 = rnn(0,1) $
+
+Name   ; z = z1,z2,z3,z4,z5,z6,z7,z8,z9,z10,z11,z12,z13,z14,z15,z16 $
+
+? Move random draws to matrix area. mz is 1000x16
+
+Matrix ; mz = z $
+
+? Linear transformation of standard normal draws. C is 16x16
+? wz is 1000x16 $
+
+Matrix ; C = Chol(vz) $
+Matrix ; wz = mz*C $
+
+? Move draws back into data area
+
+Create ; z = wz $
+
+? Create random draws from asymptotic distribution
+
+Create ; bw1 = bz(1) + z1 ; bw2 = bz(2) + z2
+       ; bw3 = bz(3) + z3 ; bw4 = bz(4) + z4
+       ; bw5 = bz(5) + z5 ; bw6 = bz(6) + z6
+       ; bw7 = bz(7) + z7 ; bw8 = bz(8) + z8 
+       ; bw9 = bz(9) + z9 ; bw10 = bz(10) + z10
+       ; bw11 = bz(11) + z11 ; bw12 = bz(12) + z12
+       ; bw13 = bz(13) + z13 ; bw14 = bz(14) + z14
+       ; bw15 = bz(15) + z15 ; bw16 = bz(16) + z16 $
+
+Create 
+
+;p_rest =  -bw1/bw16
+;p_legi = -bw2/bw16
+;p_lcc10 = -bw3/bw16
+;p_lcc25 = -bw4/bw16
+;p_lcc40 = -bw5/bw16
+;p_hcc10 = -(bw3+bw6)/bw16
+;p_hcc25 = -(bw4+bw7)/bw16
+;p_hcc40 = -(bw5+bw8)/bw16
+;p_lrf10 = -bw9/bw16
+;p_lrf25 = -bw10/bw16
+;p_lrf40 = -bw11/bw16
+;p_hrf10 = -(bw9+bw12)/bw16
+;p_hrf25 = -(bw10+bw13)/bw16
+;p_hrf40 = -(bw11+bw14)/bw16 $
+
+
+
+
+
+
+
+??? Create country-specific interactions
+
+CREATE
+;if(AUS = 1)REEF = 1 
+;if(CHL = 1)REEF = 0
+;if(CHN = 1)REEF = 1 
+;if(COL = 1)REEF = 1
+;if(GHA = 1)REEF = 0 
+;if(IDN = 1)REEF = 1 
+;if(JAP = 1)REEF = 1 
+;if(KEN = 1)REEF = 1
+;if(NLD = 1)REEF = 0
+;if(NZL = 1)REEF = 0
+;if(GBR = 1)REEF = 0 
+;if(USA = 1)REEF = 1 $
+
+CREATE
+;LGDPXFEE = LGDP*FEEUSD $
+
+CREATE
+;REEFXFEE = REEF*FEEUSD $
+
+
+
+
+
+
+
+
+??? MNL with interactions
+
+Calc; ran(10101) $
+NLOGIT
+;lhs = CHOICE,CSET,ALTI
+;Choices = a,b,c
+;pds = 6
+;Model:
+
+U(a) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE + feegdp*LGDPXFEE +
+age*AGEX + male*MALEX + highed*HIGHEDX + inc*INCX + for*FORX + patien*PATIENX + conserv*CONSERVX + 
+ccnot*CCNOTX + ccdk*CCDKX + ccnat*CCNATX +
+divsnor*DIVSNORX + donated*DONATEDX + docum*DOCUMX /
+
+U(b) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE + feegdp*LGDPXFEE + 
+age*AGEX + male*MALEX + highed*HIGHEDX + inc*INCX + for*FORX + patien*PATIENX + conserv*CONSERVX + 
+ccnot*CCNOTX + ccdk*CCDKX + ccnat*CCNATX +
+divsnor*DIVSNORX + donated*DONATEDX + docum*DOCUMX /
+
+U(c) = ASC $
+
+
+
+
+
+
+??? Mixed logit with interactions
+
+
+Calc; ran(10101) $
+NLOGIT
+;lhs = CHOICE,CSET,ALTI
+;Choices = a,b,c
+;Halton
+;rpl
+;pds = 6
+;fcn = rest(n),legis(n),
+       cc10(n),cc25(n),cc40(n),hicc10(n),hicc25(n),hicc40(n),
+       rf10(n),rf25(n),rf40(n),hirf10(n),hirf25(n),hirf40(n),
+       asc(n)
+;pts = 10
+;wtp = rest/fee
+;parameters
+;Model:
+
+U(a) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE + feegdp*LGDPXFEE +
+age*AGEX + male*MALEX + highed*HIGHEDX + inc*INCX + for*FORX + patien*PATIENX + conserv*CONSERVX + 
+ccnot*CCNOTX + ccdk*CCDKX + ccnat*CCNATX +
+divsnor*DIVSNORX + donated*DONATEDX + docum*DOCUMX /
+
+U(b) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE + feegdp*LGDPXFEE + 
+age*AGEX + male*MALEX + highed*HIGHEDX + inc*INCX + for*FORX + patien*PATIENX + conserv*CONSERVX + 
+ccnot*CCNOTX + ccdk*CCDKX + ccnat*CCNATX +
+divsnor*DIVSNORX + donated*DONATEDX + docum*DOCUMX /
+
+U(c) = ASC $
+
+
+
+
+
+
+??? MNL with interactions reef comparisons
+
+Calc; ran(10101) $
+NLOGIT
+;lhs = CHOICE,CSET,ALTI
+;Choices = a,b,c
+;pds = 6
+;Model:
+
+U(a) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE /
+
+U(b) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE /
+
+U(c) = ASC $
+
+
+
+
+
+
+??? Mixed logit with interactions reef comparisons
+
+
+Calc; ran(10101) $
+NLOGIT
+;lhs = CHOICE,CSET,ALTI
+;Choices = a,b,c
+;Halton
+;rpl
+;pds = 6
+;fcn = rest(u),legis(u),
+       cc10(u),cc25(u),cc40(u),hicc10(u),hicc25(u),hicc40(u),
+       rf10(u),rf25(u),rf40(u),hirf10(u),hirf25(u),hirf40(u),
+       asc(u)
+;pts = 200
+;wtp = rest/fee
+;parameters
+;Model:
+
+U(a) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE /
+
+U(b) = 
+rest*REST + legis*LEGIS + 
+cc10*D_CC10 + cc25*D_CC25 + cc40*D_CC40 + 
+hicc10*HID_CC10 + hicc25*HID_CC25 + hicc40*HID_CC40 + 
+rf10*D_RF10 + rf25*D_RF25 + rf40*D_RF40 + 
+hirf10*HID_RF10 + hirf25*HID_RF25 + hirf40*HID_RF40 + 
+fee*FEEUSD + feereef*REEFXFEE /
+
+U(c) = ASC $
+
+
+
+
+
+
+
